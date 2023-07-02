@@ -28,7 +28,7 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "img",
     cell: ({ row }) => {
-      const img = row.getValue("img");
+      const img = row.getValue("img") as string;
       return (
         <div className=" w-16 h-16 bg-red-600 rounded-xl overflow-hidden flex ">
           <Image

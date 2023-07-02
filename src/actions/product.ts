@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { Decimal } from "@prisma/client/runtime";
 import { revalidatePath } from "next/cache";
 
 export async function newProduct(name: string) {
@@ -133,12 +134,23 @@ export async function updateProductPrice({
   cost,
 }: {
   productId: string;
-  price: number;
-  priceCompareTo: number;
-  cost: number;
+  price: Decimal;
+  priceCompareTo: Decimal;
+  cost: Decimal;
 }) {
   await prisma.product.update({
     where: { id: productId },
     data: { price, priceCompareTo, cost },
+  });
+}
+
+export async function test(id: string, product: any, newVariant: any) {
+  await prisma.product.update({ where: { id }, data: { ...product } });
+  await prisma.variant.create({
+    data: {
+      productId: id,
+      name: newVariant.type,
+      values: { createMany: newVariant.options },
+    },
   });
 }

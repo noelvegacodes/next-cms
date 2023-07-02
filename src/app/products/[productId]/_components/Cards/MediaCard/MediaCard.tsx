@@ -12,15 +12,18 @@ import AddImageButton from "./AddImageButton";
 import { Maximize2, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { useState, useTransition } from "react";
+import { useContext, useState, useTransition } from "react";
 import Link from "next/link";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { deleteImages } from "@/actions/image";
 import { revalidate } from "@/actions/product";
+import { ProductContext } from "@/providers/Product";
 
-export default function MediaCard({ images, productId }: any) {
+export default function MediaCard() {
+  const {
+    product: { id, images },
+  } = useContext(ProductContext);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [isPending, startTransition] = useTransition();
 
   const handleSelect = (check: CheckedState, image: any) => {
     if (check) {
@@ -69,13 +72,13 @@ export default function MediaCard({ images, productId }: any) {
       </CardContent>
       <CardFooter>
         <div className="flex gap-2">
-          <AddImageButton id={productId} />
+          <AddImageButton id={id} />
           {selectedImages.length > 0 && (
             <Button
               variant="destructive"
               onClick={async () => {
                 await deleteImages(selectedImages);
-                revalidate("/products/" + productId);
+                revalidate("/products/" + id);
               }}
             >
               Delete

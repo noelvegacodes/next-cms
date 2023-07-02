@@ -1,10 +1,10 @@
+"use client";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft,
   Codepen,
   Home,
   Inbox,
-  LogOut,
   Megaphone,
   Tags,
   Users,
@@ -13,8 +13,6 @@ import { FC, useState } from "react";
 import { Button } from "./ui/button";
 import { useSelectedLayoutSegments } from "next/navigation";
 import Link from "next/link";
-import StoreSwitcher from "./StoreSwitcher";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface SideNavProps {}
 
@@ -28,7 +26,7 @@ const SideNav: FC<SideNavProps> = ({}) => {
   return (
     <nav
       className={cn(
-        "relative bg-primary h-screen flex flex-col justify-between",
+        "relative bg-primary h-screen flex flex-col justify-between z-20",
         open ? "w-72" : "w-16",
         "transition-all duration-200"
       )}

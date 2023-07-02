@@ -14,11 +14,8 @@ import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 type Checked = DropdownMenuCheckboxItemProps["checked"];
-type Props = {
-  productId: string;
-};
 
-export default function CatalogCard({ productId }: Props) {
+export default function CatalogCard() {
   const [open, setOpen] = useState(false);
   const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
   const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
