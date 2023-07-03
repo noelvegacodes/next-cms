@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,12 +26,11 @@ model Product {
   id String @id @default(cuid()) 
   name String
   description String @default("")
+  status ProductStatus @default(INACTIVE)
   images ProductImage[]
   variants Variant[]
-  status ProductStatus @default(INACTIVE)
-  inventory Int @default(0)
+  count Int @default(0)
   unitPrice Int @default(0)
-  type String?
   price Decimal @default(0)
   priceCompareTo Decimal @default(0)
   cost Decimal @default(0)
@@ -49,10 +48,10 @@ model Collection {
 
 model Variant {
   id String @id @default(cuid()) 
-  name String
+  type String
   productId String
   product Product @relation(fields: [productId], references: [id])
-  values VariantValue[]
+  options VariantValue[]
 }
 
 

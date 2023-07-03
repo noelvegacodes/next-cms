@@ -8,11 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductContext } from "@/providers/Product";
-import { useContext } from "react";
+import { useFormContext } from "react-hook-form";
 
 export default function StatusCard() {
-  const { form } = useContext(ProductContext);
+  const form = useFormContext();
 
   return (
     <Card className="shadow">

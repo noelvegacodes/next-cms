@@ -9,20 +9,22 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import AddImageButton from "./AddImageButton";
-import { Maximize2, Trash2 } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { useContext, useState, useTransition } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { CheckedState } from "@radix-ui/react-checkbox";
-import { deleteImages } from "@/actions/image";
-import { revalidate } from "@/actions/product";
-import { ProductContext } from "@/providers/Product";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 export default function MediaCard() {
+  const form = useFormContext();
   const {
-    product: { id, images },
-  } = useContext(ProductContext);
+    fields: images,
+    append,
+    remove,
+  } = useFieldArray({ name: "images", control: form.control });
+
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const handleSelect = (check: CheckedState, image: any) => {
@@ -42,7 +44,7 @@ export default function MediaCard() {
       </CardHeader>
       <CardContent className=" ">
         <div className="min-h-[300px] h-full w-full  grid grid-cols-12 grid-rows-6 gap-2">
-          {images.map((image: any, i: any) => {
+          {images.map((image, i) => {
             const isSelected = selectedImages.find(
               (imageId) => imageId === image.id
             );
@@ -72,15 +74,9 @@ export default function MediaCard() {
       </CardContent>
       <CardFooter>
         <div className="flex gap-2">
-          <AddImageButton id={id} />
+          <AddImageButton />
           {selectedImages.length > 0 && (
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                await deleteImages(selectedImages);
-                revalidate("/products/" + id);
-              }}
-            >
+            <Button variant="destructive" onClick={async () => {}}>
               Delete
             </Button>
           )}

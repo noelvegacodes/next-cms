@@ -7,7 +7,7 @@ import { useState } from "react";
 import { insertProductImage } from "@/actions/product";
 import { cn } from "@/lib/utils";
 
-export default function AddImageButton({ id }: { id: string }) {
+export default function AddImageButton() {
   const [files, setFiles] = useState<FileList>();
 
   return (
@@ -38,7 +38,6 @@ export default function AddImageButton({ id }: { id: string }) {
             );
             const data = await response.json();
             const { secure_url: url, height, width } = data;
-            await insertProductImage({ productId: id, url, height, width });
           }
         }}
       />

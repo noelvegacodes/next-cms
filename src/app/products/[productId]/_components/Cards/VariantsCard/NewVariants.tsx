@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useContext } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 import {
   Select,
@@ -17,11 +17,10 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { PlusIcon, Trash2 } from "lucide-react";
-import { ProductContext } from "@/providers/Product";
 import NewVariantOptions from "./NewVariantOptions";
 
 export default function NewVariants() {
-  const { form } = useContext(ProductContext);
+  const form = useFormContext();
 
   const {
     fields: newVariants,
@@ -74,6 +73,7 @@ export default function NewVariants() {
       ))}
       <div className="p-6">
         <Button
+          type="button"
           variant="ghost"
           className="p-0 hover:bg-transparent"
           onClick={() => {

@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useContext, useState } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useState } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -19,24 +19,33 @@ import {
 } from "@/components/ui/form";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { ProductContext } from "@/providers/Product";
 
 export default function ExistingVariants() {
-  const { form } = useContext(ProductContext);
+  const form = useFormContext();
 
   const { fields: variants, remove } = useFieldArray({
-    name: `product.variants`,
+    name: `variants`,
     control: form.control,
+    keyName: "id2",
   });
 
+  const { append } = useFieldArray({
+    name: `variantsToDelete`,
+    control: form.control,
+  });
   return (
     <>
       {variants.map((variant, index) => {
+        // console.log("existing variant")
+
         return (
           <ExistingVariant
             key={variant.id}
             variant={variant}
-            onDelete={() => remove(index)}
+            onDelete={() => {
+              append(variant.id);
+              remove(index);
+            }}
             variantIndex={index}
           />
         );
@@ -50,19 +59,33 @@ function ExistingVariant({
   variantIndex,
   onDelete,
 }: {
-  variant: { id: string; name: string; values: { value: string }[] };
+  variant: { id: string; type: string; options: { value: string }[] };
   variantIndex: number;
   onDelete: () => void;
 }) {
+  // console.log("existing variant", variant);
   const [open, setOpen] = useState(false);
-  const { form } = useContext(ProductContext);
+  const form = useFormContext();
   const {
     fields: options,
     append,
     remove,
   } = useFieldArray({
-    name: `product.variants.${variantIndex}.values`,
+    name: `variants.${variantIndex}.options`,
     control: form.control,
+    keyName: "id4",
+  });
+
+  const { append: addToVariantOptionsToDelete } = useFieldArray({
+    name: `variantOptionsToDelete`,
+    control: form.control,
+    keyName: "id3",
+  });
+
+  const { append: variantOptionsToAdd } = useFieldArray({
+    name: `variantOptionsToAdd`,
+    control: form.control,
+    keyName: "id2",
   });
 
   if (!open) {
@@ -72,10 +95,10 @@ function ExistingVariant({
           <GripVertical size={20} />
           <div>
             <h6 className="capitalize mb-1 font-medium text-sm">
-              {variant.name}
+              {variant.type}
             </h6>
             <ul className="flex gap-1">
-              {variant.values.map(({ value }) => {
+              {variant.options.map(({ value }) => {
                 return (
                   <Badge variant="secondary" key={value}>
                     {value}
@@ -92,10 +115,10 @@ function ExistingVariant({
     );
   } else {
     return (
-      <>
+      <div className="border-b pb-6">
         <FormField
           control={form.control}
-          name={`product.variants.${variantIndex}.name`}
+          name={`variants.${variantIndex}.type`}
           render={({ field }) => (
             <FormItem className=" p-6 ">
               <FormLabel>Type</FormLabel>
@@ -124,25 +147,39 @@ function ExistingVariant({
           )}
         />
         <div className="flex flex-col gap-1 px-6">
+          <FormLabel className="mb-2">Options</FormLabel>
           {options.map((option, optionIndex) => {
+            console.log("variant option", option);
             return (
               <FormField
-                key={option.id}
+                key={option.id4}
                 control={form.control}
-                name={`product.variants.${variantIndex}.values.${optionIndex}`}
+                name={`variants.${variantIndex}.options.${optionIndex}`}
                 render={({ field }) => (
                   <FormItem className="">
                     <div className="flex gap-2">
                       <Input
                         className="w-full"
+                        onKeyDown={(e) => {
+                          e.key == "Enter" &&
+                            options.length &&
+                            append({
+                              id: "new-",
+                              value: "",
+                              variantId: variant.id,
+                            });
+                        }}
                         {...form.register(
-                          `product.variants.${variantIndex}.values.${optionIndex}.value`
+                          `variants.${variantIndex}.options.${optionIndex}.value`
                         )}
                       />
                       <Button
                         disabled={optionIndex === 0 && options.length === 1}
                         variant={"outline"}
-                        onClick={() => remove(optionIndex)}
+                        onClick={() => {
+                          addToVariantOptionsToDelete(option.id);
+                          remove(optionIndex);
+                        }}
                       >
                         <Trash2 size={18} />
                       </Button>
@@ -154,7 +191,7 @@ function ExistingVariant({
           })}
           <div>
             <Button
-              className="my-2 mr-2"
+              className="mt-2 mr-2"
               onClick={() => {
                 append({
                   id: `new-${Math.random()}`,
@@ -170,7 +207,7 @@ function ExistingVariant({
             </Button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 }

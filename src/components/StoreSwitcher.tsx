@@ -62,9 +62,6 @@ export default function StoreSwitcher() {
   const [open, setOpen] = useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(groups[0].teams[0]);
-  useEffect(() => {
-    console.log("show new team dialog", showNewTeamDialog);
-  }, [showNewTeamDialog]);
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
       <Popover open={open} onOpenChange={setOpen}>

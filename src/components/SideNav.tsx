@@ -19,7 +19,6 @@ interface SideNavProps {}
 const SideNav: FC<SideNavProps> = ({}) => {
   const [open, setOpen] = useState(false);
   const segments = useSelectedLayoutSegments();
-  console.log(segments);
   const toggle = () => {
     setOpen(!open);
   };

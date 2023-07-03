@@ -1,5 +1,4 @@
 "use client";
-import { revalidate, updateProductPrice } from "@/actions/product";
 import {
   Card,
   CardContent,
@@ -9,21 +8,10 @@ import {
 } from "@/components/ui/card";
 import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ProductContext } from "@/providers/Product";
-import { Decimal } from "@prisma/client/runtime";
-import { useContext } from "react";
-
-type FormType = {
-  price: Decimal;
-  priceCompareTo: Decimal;
-  cost: Decimal;
-};
+import { useFormContext } from "react-hook-form";
 
 const PricingCard = () => {
-  const {
-    form,
-    product: { id },
-  } = useContext(ProductContext);
+  const form = useFormContext();
 
   return (
     <Card>
@@ -38,12 +26,7 @@ const PricingCard = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Price</FormLabel>
-                <Input
-                  type="number"
-                  min={0}
-                  {...field}
-                  value={Number(field.value)}
-                />
+                <Input type="number" min={0} {...field} />
               </FormItem>
             )}
           />
@@ -53,29 +36,24 @@ const PricingCard = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Compare-at price</FormLabel>
-                <Input
-                  type="number"
-                  min={0}
-                  {...field}
-                  value={Number(field.value)}
-                />
+                <Input type="number" min={0} {...field} />
               </FormItem>
             )}
           />
         </div>
       </CardContent>
-      <CardFooter className="pt-4 flex flex-col items-start gap-4">
-        <div className="flex w-full gap-4">
-          <FormField
-            control={form.control}
-            name="product.cost"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Unit price</FormLabel>
-                <Input {...field} type="number" value={Number(field.value)} />
-              </FormItem>
-            )}
-          />
+      <CardFooter className="pt-4 flex  gap-4 items-center">
+        <FormField
+          control={form.control}
+          name="product.cost"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Unit price</FormLabel>
+              <Input {...field} type="number" />
+            </FormItem>
+          )}
+        />
+        <div>
           <FormLabel>Profit</FormLabel>
           <Input
             disabled
@@ -85,6 +63,8 @@ const PricingCard = () => {
               Number(form.watch("product.price"))
             ).toFixed(2)}
           />
+        </div>
+        <div>
           <FormLabel>Margin</FormLabel>
           <Input
             disabled

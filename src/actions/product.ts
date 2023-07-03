@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { Product } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime";
 import { revalidatePath } from "next/cache";
 
@@ -45,37 +46,6 @@ export async function insertVariantOption(
   await prisma.variantValue.create({ data: { value, variantId } });
 
   revalidatePath("/products/" + productId);
-}
-
-export async function insertVariant(
-  name: string,
-  productId: string,
-  values: { value: string }[]
-) {
-  console.log(productId, name);
-  await prisma.variant.create({
-    data: { name, productId, values: { create: values } },
-  });
-
-  revalidatePath("/products/" + productId);
-}
-
-export async function newVariant({
-  productId,
-  type,
-  values,
-}: {
-  productId: string;
-  type: string;
-  values: string[];
-}) {
-  await prisma.variant.create({
-    data: {
-      name: type,
-      productId,
-      values: { create: values.map((value) => ({ value })) },
-    },
-  });
 }
 
 export async function updateVariantOptions(
@@ -144,13 +114,48 @@ export async function updateProductPrice({
   });
 }
 
-export async function test(id: string, product: any, newVariant: any) {
-  await prisma.product.update({ where: { id }, data: { ...product } });
-  await prisma.variant.create({
-    data: {
-      productId: id,
-      name: newVariant.type,
-      values: { createMany: newVariant.options },
+export async function updateProduct(product: Product) {
+  await prisma.product.update({ where: { id: product.id }, data: product });
+}
+
+export async function insertNewVariants(
+  productId: string,
+  variants: { type: string; options: { value: string }[] }[]
+) {
+  try {
+    await prisma.$transaction(
+      variants.map((variant) => {
+        return prisma.variant.create({
+          data: {
+            productId,
+            type: variant.type,
+            options: { create: variant.options },
+          },
+        });
+      })
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function deleteVariants(variantIds: string[]) {
+  console.log("variantIds to delete", variantIds);
+  await prisma.variant.deleteMany({ where: { id: { in: variantIds } } });
+}
+
+export async function deleteVariantOptions(variantOptionIds: string[]) {
+  await prisma.variantValue.deleteMany({
+    where: {
+      id: { in: variantOptionIds },
     },
+  });
+}
+
+export async function insertVariantOptions(
+  options: { id: string; value: string; variantId: string }[]
+) {
+  await prisma.variantValue.createMany({
+    data: options.map(({ value, variantId }) => ({ value, variantId })),
   });
 }

@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ProductContext } from "@/providers/Product";
 import { Trash2 } from "lucide-react";
-import { useContext } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 const NewVariantOptions = ({ variantIndex }: { variantIndex: number }) => {
-  const { form } = useContext(ProductContext);
+  const form = useFormContext();
   const {
     fields: options,
     append,
@@ -32,8 +30,14 @@ const NewVariantOptions = ({ variantIndex }: { variantIndex: number }) => {
                     {...form.register(
                       `newVariants.${variantIndex}.options.${optionIndex}.value`
                     )}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      options.length - 1 === optionIndex &&
+                      append({ value: "" })
+                    }
                   />
                   <Button
+                    type="button"
                     disabled={optionIndex === 0 && options.length === 1}
                     variant={"outline"}
                     onClick={() => remove(optionIndex)}
